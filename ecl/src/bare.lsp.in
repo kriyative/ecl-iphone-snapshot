@@ -1,0 +1,151 @@
+;;; @configure_input@
+;;;
+;;; This file can be loaded either in ECL_MIN or in the final executable
+;;; ECL. In both cases, it ensures that we have a working Common-Lisp
+;;; environment (either interpreted, as in ECL_MIN, or compiled, as in ECL),
+;;; that the compiler is loaded, that we use the headers in this directory,
+;;; etc.
+;;;
+;;; * By redefining "SYS:" ECL will be able to
+;;;   find headers and libraries in the build directory.
+;;;
+(princ "
+;;;
+;;; Welcome to bare.lsp. Let's bring this instance up!
+;;;")
+
+(si::pathname-translations "SRC" `(("**;*.*.*" "@true_srcdir@/**/*.*")))
+(si::pathname-translations "EXT" `(("**;*.*.*" "@true_srcdir@/../contrib/**/*.*")))
+(si::pathname-translations "BUILD" `(("**;*.*.*" "@true_builddir@/**/*.*")))
+(si::pathname-translations "SYS" '(("**;*.*.*" "@true_builddir@/**/*.*")))
+
+;;;
+;;; * Set ourselves in the 'SYSTEM package
+;;;
+(setq *package* (find-package "SYSTEM"))
+(setq si::*keep-definitions* nil)
+
+;;;
+;;; * Load Common-Lisp base library
+;;;
+(princ "
+;;;
+;;; About to load lsp/load.lsp
+;;; ")
+
+(if (or (member "ECL-MIN" *features* :test #'string-equal)
+	(member "CROSS" *features* :test #'string-equal))
+  (load "lsp/load.lsp" :verbose nil))
+
+(defun si::process-command-args () )
+
+;;;
+;;; * Load PCL-based Common-Lisp Object System
+;;;
+(setf sys::*gc-verbose* nil)
+#+(or ecl-min cross)
+(progn
+ (terpri)
+ (princ ";;; Loading clos/load.lsp")
+ (load "clos/load.lsp" :verbose nil))
+
+#+cmu-format
+(progn
+ (terpri)
+ (princ ";;; Loading lsp/format.lsp")
+ (load "src:lsp;format.lsp" :verbose nil))
+
+;;;
+;;; * Load the compiler.
+;;;
+
+;; Make sure compiler sees what it should see.
+#-:wants-dlopen (setq *features* (delete :dlopen *features*))
+#+:wants-dlopen (push :dlopen *features*)
+
+(terpri)
+(princ #+(or cross ecl-min) ";;; About to load cmp/load.lsp"
+       #-(or cross ecl-min) ";;; About to load cmp.so")
+
+(load #+(or cross ecl-min) "cmp/load.lsp"
+      #-(or cross ecl-min) "cmp.so")
+
+;;;
+;;; * Remove documentation from compiled files
+;;;
+(setq si::*keep-documentation* nil)
+
+;;;
+;;; * Timed compilation facility.
+;;;
+(defun compile-if-old (destdir sources &rest options)
+  (unless (probe-file destdir)
+    (si::mkdir destdir #o0777))
+  (mapcar #'(lambda (source)
+	      (let ((object (merge-pathnames destdir (compile-file-pathname source :type :object))))
+		(unless (and (probe-file object)
+			     (>= (file-write-date object) (file-write-date source)))
+		  (format t "~&(compile-file ~S :output-file ~S~{ ~S~})~%"
+			  source object options)
+		  (apply #'compile-file source :output-file object options))
+		object))
+	  sources))
+
+(defvar *module-symbols* nil)
+(defvar *module-files* nil)
+
+(defun build-fake-module (name lisp-files)
+  (let* ((output (make-pathname :type "fasb" :defaults name))
+         (pack *package*))
+    (with-open-file (sout output :direction :output :if-exists :supersede
+			  :if-does-not-exist :create)
+      (loop for file in lisp-files
+         and *package* = pack
+         and si::*bytecodes-compiler* = t
+         do (with-open-file (sin file :direction :input)
+              (loop for form = (read sin nil :eof)
+                 until (eq form :eof)
+                 do (let ((bytecodes (ext::eval-with-env form nil nil nil nil)))
+                      (with-standard-io-syntax
+                        (write `(funcall ,bytecodes) :stream sout :circle t :escape t
+                               :readably t :pretty nil)))))))
+    output))
+
+(defun build-fake-asdf (name)
+  (with-open-file (*standard-output* (make-pathname :name name :type "asd")
+                   :direction :output :if-exists :supersede :if-does-not-exist :create)
+    (print `(defsystem ,name
+               :components ((:compiled-file ,(string name)))))))
+
+(defun build-module (name sources &key additional-files
+                     (builtin nil) (dir "build:")
+                     ((:prefix si::*init-function-prefix*) "EXT"))
+  (proclaim '(optimize (safety 2) (speed 1)))
+  (let* ((name (string-downcase name)))
+    (when additional-files
+      (setf *module-files* (append additional-files *module-files*)))
+    (unless (equalp name "asdf")
+      (build-fake-asdf name))
+    (if builtin
+	(let* ((objects (compile-if-old dir sources :system-p t :c-file t
+					:data-file t :h-file t)))
+	  (c::build-static-library name :lisp-files objects)
+	  (push (intern name) *module-symbols*))
+        #-:wants-dlopen
+	(push (build-fake-module name sources) *module-files*)
+	#+:wants-dlopen
+	(let* ((objects (compile-if-old dir sources :system-p t :c-file t
+					:data-file t :h-file t)))
+	  (push (c::build-fasl name :lisp-files objects) *module-files*)))))
+
+;;;
+;;; * Go back to build directory to start compiling
+;;;
+#+ecl-min
+(setq *features* (cons :stage1 (remove :ecl-min *features*)))
+
+(terpri)
+(princ ";;;
+;;; Now we are in shape to do something useful.
+;;; End of bare.lsp")
+(terpri)

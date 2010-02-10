@@ -1,0 +1,21 @@
+/cord.h/1.1.1.1/Tue Jun 26 17:16:15 2001//TECL_9_12_3
+/ec.h/1.1.1.1/Tue Jun 26 17:16:15 2001//TECL_9_12_3
+/gc.h/1.10/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_allocator.h/1.3/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_amiga_redirects.h/1.1/Sun Aug 19 18:04:30 2001//TECL_9_12_3
+/gc_backptr.h/1.1/Sun Aug 19 18:04:30 2001//TECL_9_12_3
+/gc_config_macros.h/1.7/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_cpp.h/1.8/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_gcj.h/1.5/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_inline.h/1.2/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_mark.h/1.4/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_pthread_redirects.h/1.6/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_tiny_fl.h/1.1/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_typed.h/1.3/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/gc_version.h/1.1/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/include.am/1.1/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/javaxfc.h/1.2/Fri Oct 29 10:27:29 2004//TECL_9_12_3
+/leak_detector.h/1.3/Sat Jun 17 15:58:20 2006//TECL_9_12_3
+/new_gc_alloc.h/1.6/Fri Apr  3 17:26:56 2009//TECL_9_12_3
+/weakpointer.h/1.1.1.1/Tue Jun 26 17:16:17 2001//TECL_9_12_3
+D

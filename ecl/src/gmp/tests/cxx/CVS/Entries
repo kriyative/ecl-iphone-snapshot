@@ -1,0 +1,18 @@
+/Makefile.am/1.4/Sat Jan 20 12:28:23 2007//TECL_9_12_3
+/Makefile.in/1.4/Sat Jan 20 12:28:25 2007//TECL_9_12_3
+/clocale.c/1.1/Sat Jan 20 12:28:25 2007//TECL_9_12_3
+/t-assign.cc/1.1/Sat Jan 20 12:28:25 2007//TECL_9_12_3
+/t-binary.cc/1.1/Sat Jan 20 12:28:25 2007//TECL_9_12_3
+/t-cast.cc/1.2/Sat Jan 20 12:28:25 2007//TECL_9_12_3
+/t-constr.cc/1.2/Sat Jan 20 12:28:25 2007//TECL_9_12_3
+/t-headers.cc/1.2/Sat Jan 20 12:28:31 2007//TECL_9_12_3
+/t-istream.cc/1.1/Sat Jan 20 12:28:31 2007//TECL_9_12_3
+/t-locale.cc/1.4/Sat Jan 20 12:28:32 2007//TECL_9_12_3
+/t-misc.cc/1.1/Sat Jan 20 12:28:34 2007//TECL_9_12_3
+/t-ops.cc/1.1/Sat Jan 20 12:28:35 2007//TECL_9_12_3
+/t-ostream.cc/1.3/Sat Jan 20 12:28:35 2007//TECL_9_12_3
+/t-prec.cc/1.1/Sat Jan 20 12:28:35 2007//TECL_9_12_3
+/t-rand.cc/1.1/Sat Jan 20 12:28:35 2007//TECL_9_12_3
+/t-ternary.cc/1.1/Sat Jan 20 12:28:35 2007//TECL_9_12_3
+/t-unary.cc/1.1/Sat Jan 20 12:28:35 2007//TECL_9_12_3
+D

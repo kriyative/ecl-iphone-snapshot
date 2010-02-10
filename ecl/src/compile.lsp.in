@@ -1,0 +1,296 @@
+;;; @configure_input@
+;;;
+;;; This is the "makefile" file for building ECL. The purpose of this file is
+;;;	- Compile the core of the Common-Lisp library (lsp, clos)
+;;;	- Compile the compiler (cmp)
+;;;	- Build an executable
+;;; This can be done in two ways:
+;;;	- Using interpreted code and the ECL_MIN minimal environment.
+;;;	- On a second stage, using the final ECL executable, to test it.
+;;;
+
+(progn
+  (setq *package* (find-package "SYSTEM"))
+  (setq *features* @LSP_FEATURES@))
+
+;;;
+;;; * Ensure that we have the whole of Common-Lisp to compile
+;;;
+(load "bare.lsp" :verbose nil)
+
+;;;
+;;; * Dump documentation
+;;;
+#+stage1
+(progn
+  (load "@true_srcdir@/doc/help.lsp")
+  (si::dump-documentation "@true_builddir@/help.doc"))
+
+;;;
+;;; * Trick to make names shorter in C files
+;;;
+(si::package-lock "CL" nil)
+(rename-package "CL" "CL" '("COMMON-LISP" "LISP"))
+
+;;;
+;;; * Add include path to not yet installed headers, and remove include flag
+;;;   (-I) to installed directory, and Notice that we must explicitely mention
+;;;   libecl.so/ecl.dll instead of using -lecl. This is to avoid interference
+;;;   with an already installed copy of ECL.
+;;;
+(setq c::*cc-flags*
+      #-msvc "@CPPFLAGS@ @CFLAGS@ @ECL_CFLAGS@ -I\"@true_srcdir@/c\""
+      #+msvc "@CFLAGS@ @ECL_CFLAGS@"
+      c::*ecl-include-directory* "@true_builddir@/"
+      c::*ecl-library-directory* "@true_builddir@/")
+#-:wants-dlopen 
+(setf c::*ld-flags*
+      "@LDFLAGS@ @LIBPREFIX@ecl.@LIBEXT@ @CORE_LIBS@ @LIBS@ @FASL_LIBS@")
+#+(and :wants-dlopen (not nonstop))
+(setf c::*ld-flags*
+      "@LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@"
+      c::*ld-shared-flags*
+      "@SHARED_LDFLAGS@ @LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@"
+      c::*ld-bundle-flags*
+      "@BUNDLE_LDFLAGS@ @LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@")
+;;; FIXME: The nonstop platform does not support soname
+#+(and :wants-dlopen nonstop)
+(setf c::*ld-flags*
+      "@LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@"
+      c::*ld-shared-flags*
+      "@SHARED_LDFLAGS@ @LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@"
+      c::*ld-bundle-flags*
+      "@BUNDLE_LDFLAGS@ @LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@")
+
+;;;
+;;; * Avoid name clashes with user supplied code.
+;;;
+(setq si::*init-function-prefix* "ECL")
+
+;;;
+;;; * Compile and link Common-Lisp base library
+;;;
+(setq si::*keep-documentation* nil)
+(proclaim '(optimize (safety 2) (space 3)))
+(let* ((c::*cc-flags* (concatenate 'string "-DECL_API -I\"@true_builddir@/c\" " c::*cc-flags*))
+       (lsp-objects (compile-if-old "build:lsp;" +lisp-module-files+
+				    :system-p t :c-file t :data-file t :h-file t
+				    ;;:shared-data-file "build:ecl.sdat"
+				    )))
+  #+CLOS
+  (let* ((c::*compile-to-linking-call* nil))
+    (proclaim '(optimize (safety 2) (space 3)))
+    (setq lsp-objects (append lsp-objects
+			      (compile-if-old "build:clos;" +clos-module-files+
+					      :system-p t :c-file t :data-file t :h-file t
+					      ;;:shared-data-file "build:ecl.sdat"
+					      ))))
+  (c::build-static-library "lsp" :lisp-files lsp-objects
+			   ;;:shared-data-file "build:ecl.sdat"
+			   ))
+
+#-:wants-dlopen
+(c::safe-system
+	(concatenate 'string
+"sh -c 'rm -rf tmp; mkdir tmp;"
+"cp @LIBPREFIX@eclmin.@LIBEXT@ @LIBPREFIX@ecl.@LIBEXT@;"
+"cd tmp; ar -x ../@LIBPREFIX@lsp.@LIBEXT@;"
+"for i in *.@OBJEXT@; do mv $i lsp_`basename $i`; done;"
+"ar -r ../@LIBPREFIX@ecl.@LIBEXT@ *.@OBJEXT@ ../c/all_symbols2.@OBJEXT@; rm *.@OBJEXT@;"
+"@RANLIB@ ../@LIBPREFIX@ecl.@LIBEXT@'"))
+
+#+:wants-dlopen
+;;;
+;;; We do not need the -rpath flag for the library, nor -lecl.
+;;;
+(let* ((c::*ld-shared-flags* #-msvc "@SHARED_LDFLAGS@ @LDFLAGS@ @SONAME_LDFLAGS@ @CORE_LIBS@ @LIBS@ @FASL_LIBS@"
+			     #+msvc "@SHARED_LDFLAGS@ @LDFLAGS@ @STATICLIBS@ @CLIBS@")
+       (c::*cc-flags* (concatenate 'string "-DECL_API -I@true_builddir@/c " c::*cc-flags*))
+       (extra-args nil))
+  #+(or mingw32 cygwin)
+  (progn
+    ;; We need these two to force dllwrap to export the symbols
+    ;; in these libraries. Otherwise it will not be possible to
+    ;; call functions from GMP or GC in code that embeds ECL.
+    (when (probe-file "@LIBPREFIX@eclgc.@LIBEXT@")
+      (push "@LIBPREFIX@eclgc.@LIBEXT@" extra-args))
+    (when (probe-file "@LIBPREFIX@eclgmp.@LIBEXT@")
+      (push "@LIBPREFIX@eclgmp.@LIBEXT@" extra-args)))
+  (print extra-args)
+  (apply #'c::shared-cc
+	 (compile-file-pathname "ecl" :type :dll)
+	 "c/main.@OBJEXT@"
+	 "c/all_symbols2.@OBJEXT@"
+	 "@LIBPREFIX@lsp.@LIBEXT@"
+	 "@LIBPREFIX@eclmin.@LIBEXT@"
+	 extra-args))
+
+;;;
+;;; * Compile and link Common-Lisp to C compiler
+;;;
+(proclaim '(optimize (safety 2) (space 3)))
+
+(si::pathname-translations "SYS" '(("**;*.*.*" "@ecldir\@/**/*.*")))
+
+#+WANTS-CMP
+(build-module "cmp" +cmp-module-files+ 
+              :dir "build:cmp;" :prefix "CMP" :additional-files '("sysfun.lsp")
+              :builtin #+:BUILTIN-CMP t #-:BUILTIN-CMP nil)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; EXTENSIONS
+;;;
+
+;;;
+;;; * BYTECMP
+;;;
+#+WANTS-BYTECMP
+(build-module "bytecmp"
+              '("ext:bytecmp;bytecmp.lsp")
+              :dir "build:ext;"
+              :prefix "EXT"
+              :builtin
+	      #+:BUILTIN-BYTECMP t
+	      #-:BUILTIN-BYTECMP nil)
+
+;;;
+;;; * DEFSYSTEM
+;;;
+#+WANTS-DEFSYSTEM
+(build-module "defsystem"
+              '("ext:defsystem;defsystem.lisp")
+              :dir "build:ext;"
+              :prefix "EXT"
+              :builtin #+:BUILTIN-DEFSYSTEM t #-:BUILTIN-DEFSYSTEM nil)
+
+;;;
+;;; * ASDF
+;;;
+#+WANTS-ASDF
+(build-module "asdf"
+              '("ext:asdf;asdf.lisp"
+		"ext:asdf;asdf-ecl.lisp")
+              :dir "build:ext;"
+              :prefix "EXT"
+              :builtin #+:BUILTIN-ASDF t #-:BUILTIN-ASDF nil)
+
+;;;
+;;; * PROFILE
+;;;
+#+(and WANTS-PROFILE (not (or cygwin mingw32)))
+(build-module "profile"
+              '("ext:profile;profile.lisp")
+              :dir "build:ext;"
+              :prefix "EXT"
+              :builtin
+	      #+(or (NOT :WANTS-DLOPEN) :BUILTIN-PROFILE) t
+	      #-(or (NOT :WANTS-DLOPEN) :BUILTIN-PROFILE) nil)
+
+;;;
+;;; * Sockets library.
+;;;
+
+#+WANTS-SOCKETS
+(build-module "sockets"
+	      '("ext:sockets;package.lisp"
+		"ext:sockets;sockets.lisp")
+	      :dir "build:ext;"
+	      :prefix "EXT"
+              :builtin
+	      #+(or (NOT :WANTS-DLOPEN) :BUILTIN-SOCKETS) t
+	      #-(or (NOT :WANTS-DLOPEN) :BUILTIN-SOCKETS) nil)
+
+#+WANTS-SOCKETS
+(build-module "sb-bsd-sockets"
+	      '("ext:sockets;sb-bsd-sockets.lisp")
+	      :dir "build:ext;"
+	      :prefix "EXT"
+	      :builtin nil)
+
+#+WANTS-SERVE-EVENT
+(build-module "serve-event"
+	      '("ext:serve-event;serve-event.lisp")
+	      :dir "build:ext;"
+	      :prefix "EXT"
+              :builtin
+	      #+(or (NOT :WANTS-DLOPEN) :BUILTIN-SERVE-EVENT) t
+	      #-(or (NOT :WANTS-DLOPEN) :BUILTIN-SERVE-EVENT) nil)
+
+;;;
+;;; * Test suite
+;;;
+#+WANTS-RT
+(build-module "rt"
+	      '("ext:rt;rt.lisp")
+	      :dir "build:ext;"
+	      :prefix "EXT"
+              :builtin #+:BUILTIN-RT t #-:BUILTIN-RT nil)
+
+;;;
+;;; * External formats
+;;;
+#+UNICODE
+(load "ext:encodings;generate.lisp")
+
+;;;
+;;; * Compile the portable CLX library.
+;;;
+
+#+WANTS-CLX
+(let* ((*features* (cons :clx-ansi-common-lisp *features*))
+       (+clx-src-files+ '("src:clx;package.lisp"
+                          "src:clx;depdefs.lisp"
+                          "src:clx;clx.lisp"
+                          "src:clx;dependent.lisp"
+                          "src:clx;macros.lisp"
+                          "src:clx;bufmac.lisp"
+                          "src:clx;buffer.lisp"
+                          "src:clx;display.lisp"
+                          "src:clx;gcontext.lisp"
+                          "src:clx;input.lisp"
+                          "src:clx;requests.lisp"
+                          "src:clx;fonts.lisp"
+                          "src:clx;graphics.lisp"
+                          "src:clx;text.lisp"
+                          "src:clx;attributes.lisp"
+                          "src:clx;translate.lisp"
+                          "src:clx;keysyms.lisp"
+                          "src:clx;manager.lisp"
+                          "src:clx;image.lisp"
+                          "src:clx;resource.lisp"
+			  "build:clx;module.lisp"))
+       #+:msvc
+       (c::*cc-flags* (concatenate 'string c::*cc-flags* " -Zm150")))
+  (let ((filename "build:clx;module.lisp"))
+    (ensure-directories-exist filename)
+    (with-open-file (s filename :direction :output :if-exists :overwrite
+		       :if-does-not-exist :create)
+     (print '(provide :clx) s)))
+  (unless (find-package "SB-BSD-SOCKETS")
+    (load "ext:sockets;package.lisp"))
+  (mapcar #'load +clx-src-files+)
+  (build-module "clx" +clx-src-files+ :dir "build:clx;" :prefix "CLX"
+		:builtin
+		#+(OR (NOT :WANTS-DLOPEN) :BUILTIN-CLX) t
+		#-(OR (NOT :WANTS-DLOPEN) :BUILTIN-CLX) nil))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; THE FINAL EXECUTABLE
+;;;
+
+(setq si::*init-function-prefix* NIL)
+
+(compiler::build-program
+ #+:msvc "ecl2"
+ #+(and (or cross stage1) (not msvc)) "bin/ecl"
+ #-(or cross stage1 msvc) "ecl2"
+ :lisp-files *module-symbols*
+ :ld-flags '(#-msvc "-L./"))
+
+(with-open-file (modules-list #P"build:MODULES" :direction :output)
+  (dolist (module-file *module-files*)
+    (format modules-list "~A~%" module-file)))
+
+(quit)

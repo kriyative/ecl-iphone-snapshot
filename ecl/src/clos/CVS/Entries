@@ -1,0 +1,24 @@
+/boot.lsp/1.28/Sun Nov 29 21:42:29 2009//TECL_9_12_3
+/builtin.lsp/1.32/Sun Nov  8 00:00:16 2009//TECL_9_12_3
+/change.lsp/1.18/Sun Nov 29 21:42:40 2009//TECL_9_12_3
+/cmpinit.lsp/1.3/Sat Feb  2 19:14:05 2008//TECL_9_12_3
+/combin.lsp/1.24/Sun Nov 29 21:49:47 2009//TECL_9_12_3
+/conditions.lsp/1.54/Mon Nov  9 08:33:57 2009//TECL_9_12_3
+/defclass.lsp/1.28/Mon Dec 29 10:33:12 2008//TECL_9_12_3
+/defsys.lsp.in/1.4/Wed Jul 23 13:09:44 2003//TECL_9_12_3
+/fixup.lsp/1.33/Sun Nov  8 00:00:28 2009//TECL_9_12_3
+/generic.lsp/1.23/Sun Nov 29 23:28:19 2009//TECL_9_12_3
+/init.lsp/1.2/Sat Feb  2 19:14:05 2008//TECL_9_12_3
+/inspect.lsp/1.18/Sun Nov  8 00:00:28 2009//TECL_9_12_3
+/kernel.lsp/1.39/Sun Nov 29 21:42:29 2009//TECL_9_12_3
+/load.lsp.in/1.22/Wed Jun 17 07:49:22 2009//TECL_9_12_3
+/macros.lsp/1.23/Sun Nov 29 21:42:17 2009//TECL_9_12_3
+/method.lsp/1.37/Wed Dec  2 15:03:59 2009//TECL_9_12_3
+/precomp.lsp/1.5/Sat Feb  2 19:14:05 2008//TECL_9_12_3
+/print.lsp/1.20/Sun Jun 21 09:02:35 2009//TECL_9_12_3
+/slot.lsp/1.21/Sun Nov 15 21:40:20 2009//TECL_9_12_3
+/standard.lsp/1.58/Sun Nov 29 21:42:29 2009//TECL_9_12_3
+/stdmethod.lsp/1.8/Sun Nov 29 21:42:29 2009//TECL_9_12_3
+/streams.lsp/1.17/Mon Apr  6 12:46:22 2009//TECL_9_12_3
+/walk.lsp/1.12/Sat Feb  2 19:14:05 2008//TECL_9_12_3
+D

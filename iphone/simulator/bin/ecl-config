@@ -1,0 +1,40 @@
+#!/bin/sh
+# bin/ecl-config.pre.  Generated from ecl-config by configure.
+
+usage()
+{
+  cat <<EOF
+Usage: $0 [OPTIONS] [LIBS]
+Options: 
+	[--cflags]
+	[--libs|--ldflags]
+Libs:
+	cmp
+EOF
+}
+
+LDFLAGS="-lecl"
+for i in $*; do
+  case $i in
+    --cflags|-c)
+      echo_cflags=yes
+      ;;
+    --libs|--ldflags|-l)
+      echo_ldflags=yes
+      ;;
+    cmp)
+      LDFLAGS="$LDFLAGS -lcmp"
+      ;;
+    *)
+      usage 1 >&2
+      ;;
+    esac;
+done
+
+if test "$echo_cflags" = "yes"; then
+  echo "-Ddarwin  @DEBUG_CFLAGS@ -I/opt/src/ecl-iphone-builder/iphone/simulator/include/"
+fi
+
+if test "$echo_ldflags" = "yes"; then
+  echo "@LDRPATH@ -L/opt/src/ecl-iphone-builder/iphone/simulator/lib/ $LDFLAGS -arch i386 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.0.sdk -mmacosx-version-min=10.5   -lpthread   -lm "
+fi

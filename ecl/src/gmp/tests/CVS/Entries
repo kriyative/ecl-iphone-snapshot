@@ -1,0 +1,25 @@
+/Makefile.am/1.4/Sat Jan 20 12:28:20 2007//TECL_9_12_3
+/Makefile.in/1.4/Sat Jan 20 12:28:21 2007//TECL_9_12_3
+/amd64call.asm/1.1/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/amd64check.c/1.1/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/memory.c/1.3/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/misc.c/1.4/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/refmpf.c/1.2/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/refmpn.c/1.4/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/refmpq.c/1.2/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/refmpz.c/1.2/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/spinner.c/1.2/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-bswap.c/1.2/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-constants.c/1.4/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-count_zeros.c/1.2/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-gmpmax.c/1.2/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-hightomask.c/1.1/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-modlinv.c/1.3/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-parity.c/1.1/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-popc.c/1.1/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/t-sub.c/1.1/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/tests.h/1.3/Sat Jan 20 12:28:22 2007//TECL_9_12_3
+/trace.c/1.3/Sat Jan 20 12:28:23 2007//TECL_9_12_3
+/x86call.asm/1.2/Sat Jan 20 12:28:23 2007//TECL_9_12_3
+/x86check.c/1.2/Sat Jan 20 12:28:23 2007//TECL_9_12_3
+D

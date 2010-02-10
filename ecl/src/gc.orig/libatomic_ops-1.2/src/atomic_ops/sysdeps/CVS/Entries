@@ -1,0 +1,27 @@
+/Makefile.am/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/Makefile.in/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/README/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/acquire_release_volatile.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/aligned_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/all_acquire_release_volatile.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/all_aligned_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/all_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/ao_t_is_int.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/char_acquire_release_volatile.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/char_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/emul_cas.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/generic_pthread.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/int_acquire_release_volatile.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/int_aligned_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/int_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/ordered.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/ordered_except_wr.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/read_ordered.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/short_acquire_release_volatile.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/short_aligned_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/short_atomic_load_store.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/standard_ao_double_t.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/test_and_set_t_is_ao_t.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+/test_and_set_t_is_char.h/1.1/Fri Apr  3 17:26:57 2009//TECL_9_12_3
+D

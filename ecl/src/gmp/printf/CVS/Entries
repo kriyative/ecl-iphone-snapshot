@@ -1,0 +1,24 @@
+/Makefile.am/1.3/Sat Jan 20 12:28:16 2007//TECL_9_12_3
+/Makefile.in/1.3/Sat Jan 20 12:28:16 2007//TECL_9_12_3
+/asprintf.c/1.2/Sat Jan 20 12:28:16 2007//TECL_9_12_3
+/asprntffuns.c/1.3/Sat Jan 20 12:28:16 2007//TECL_9_12_3
+/doprnt.c/1.3/Sat Jan 20 12:28:16 2007//TECL_9_12_3
+/doprntf.c/1.3/Sat Jan 20 12:28:16 2007//TECL_9_12_3
+/doprnti.c/1.3/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/fprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/obprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/obprntffuns.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/obvprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/printf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/printffuns.c/1.3/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/repl-vsnprintf.c/1.3/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/snprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/snprntffuns.c/1.3/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/sprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/sprintffuns.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/vasprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/vfprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/vprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/vsnprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+/vsprintf.c/1.2/Sat Jan 20 12:28:17 2007//TECL_9_12_3
+D
