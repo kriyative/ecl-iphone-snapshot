@@ -1,30 +1,15 @@
 ECL Build Notes
 ~~~~~~~~~~~~~~~
 
-After running git-clone, open a shell in the ecl-iphone-builder
-directory.
+This snapshot builds ECL for iPhone from a set of patched sources of
+Boehm GC and ECL 9.12.3. If you wish to work off the original sources,
+please refer to:
 
-The following script assumes the sources were unpacked in the /opt/src
-directory.
-
-  cd /opt/src/ecl-iphone-builder
-
-  # see <http://www.hpl.hp.com/personal/Hans_Boehm/gc/#where> for more details
-  cvs -d:pserver:anonymous@bdwgc.cvs.sourceforge.net:/cvsroot/bdwgc co bdwgc
-  cd bdwgc
-  patch -p0 < ../ecl-gc-patch.txt
-  cd ..
-
-  cvs -d:pserver:anonymous@ecls.cvs.sourceforge.net:/cvsroot/ecls co -r ECL_9_12_3 ecl
-  cd ecl
-  patch -p0 < ../ecl-patch.txt
-  cd src
-  mv gc gc.orig
-  ln -s ../../bdwgc gc
-  cd ..
+  http://github.com/kriyative/ecl-iphone-builder
 
 Now comes the actual build:
 
+  cd ecl/
   ../build.sh --install ../iphone
 
 Get yourself a cup of coffee, while this runs. When it's done, there
